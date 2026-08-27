@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Games Arena 🎮</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top left, #2d0b32, #120417, #05010a);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .grid-cell {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .grid-cell:hover {
+            background: rgba(236, 72, 153, 0.2);
+        }
+    </style>
+</head>
+<body class="px-4 py-8">
+
+    <nav class="w-full max-w-4xl mx-auto flex justify-between items-center mb-8">
+        <a href="index.html" class="px-4 py-2 glass-card rounded-full text-sm font-semibold text-pink-300 hover:text-white transition flex items-center space-x-2">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Card</span>
+        </a>
+        <h1 class="text-xl font-bold text-amber-300">Sister-Brother Games 🎮</h1>
+    </nav>
+
+    <main class="max-w-4xl mx-auto space-y-12">
+
+        <section class="glass-card rounded-3xl p-6 md:p-8 text-center max-w-md mx-auto space-y-4">
+            <h2 class="text-2xl font-bold text-pink-400">Sibling Tic-Tac-Toe</h2>
+            <p class="text-xs text-gray-300">Play together on the same screen! 👑 vs 🚀</p>
+            
+            <div class="text-sm font-semibold text-amber-300" id="ttt-status">Player 👑's Turn</div>
+
+            <div class="grid grid-cols-3 gap-3 justify-center my-4 mx-auto w-max" id="board">
+                <div class="grid-cell" onclick="makeMove(0)"></div>
+                <div class="grid-cell" onclick="makeMove(1)"></div>
+                <div class="grid-cell" onclick="makeMove(2)"></div>
+                <div class="grid-cell" onclick="makeMove(3)"></div>
+                <div class="grid-cell" onclick="makeMove(4)"></div>
+                <div class="grid-cell" onclick="makeMove(5)"></div>
+                <div class="grid-cell" onclick="makeMove(6)"></div>
+                <div class="grid-cell" onclick="makeMove(7)"></div>
+                <div class="grid-cell" onclick="makeMove(8)"></div>
+            </div>
+
+            <button onclick="resetTTT()" class="px-6 py-2 bg-pink-500/20 hover:bg-pink-500/40 text-pink-300 border border-pink-500/30 rounded-full text-sm font-semibold transition">
+                Reset Game
+            </button>
+        </section>
+
+        <section class="glass-card rounded-3xl p-6 md:p-8 max-w-lg mx-auto space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-amber-300">Who Knows Best? Trivia 🧠</h2>
+                <p class="text-xs text-gray-400 mt-1">Answer the quick sibling questions below!</p>
+            </div>
+
+            <div id="quiz-container" class="space-y-4">
+                <p class="font-medium text-gray-200" id="quiz-question">Loading Question...</p>
+                <div class="grid grid-cols-1 gap-3" id="quiz-options"></div>
+            </div>
+            
+            <div class="text-center">
+                <span id="quiz-score" class="text-sm text-pink-400 font-semibold"></span>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* Tic Tac Toe Logic */
+        let boardState = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "👑";
+        let gameActive = true;
+
+        const winningCombos = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+        ];
+
+        function makeMove(index) {
+            if (boardState[index] !== "" || !gameActive) return;
+            
+            boardState[index] = currentPlayer;
+            document.getElementsByClassName('grid-cell')[index].innerText = currentPlayer;
+
+            if (checkWin()) {
+                document.getElementById('ttt-status').innerText = `Player ${currentPlayer} Wins! 🎉`;
+                gameActive = false;
+                return;
+            }
+
+            if (!boardState.includes("")) {
+                document.getElementById('ttt-status').innerText = "It's a Tie! 🤝";
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "👑" ? "🚀" : "👑";
+            document.getElementById('ttt-status').innerText = `Player ${currentPlayer}'s Turn`;
+        }
+
+        function checkWin() {
+            return winningCombos.some(combo => {
+                return combo.every(index => boardState[index] === currentPlayer);
+            });
+        }
+
+        function resetTTT() {
+            boardState = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "👑";
+            gameActive = true;
+            document.getElementById('ttt-status').innerText = "Player 👑's Turn";
+            const cells = document.getElementsByClassName('grid-cell');
+            for (let cell of cells) cell.innerText = "";
+        }
+
+        /* Trivia Quiz Logic */
+        const questions = [
+            {
+                q: "Who is the better secret keeper?",
+                options: ["Sister 👑", "Brother 🚀", "Neither 🙈"],
+                answer: 0
+            },
+            {
+                q: "Who usually controls the TV remote?",
+                options: ["Sister 📺", "Brother 🎮", "Whoever gets it first 🏃"],
+                answer: 0
+            },
+            {
+                q: "Who apologizes first after a silly fight?",
+                options: ["Sister 😇", "Brother 😇", "We just act like nothing happened 😂"],
+                answer: 2
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            if(currentQ >= questions.length) {
+                document.getElementById('quiz-container').innerHTML = `
+                    <div class="text-center py-4">
+                        <h3 class="text-xl font-bold text-pink-400">Quiz Completed! 🎉</h3>
+                        <p class="text-sm text-gray-300 mt-2">You both are the ultimate sibling duo!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const qData = questions[currentQ];
+            document.getElementById('quiz-question').innerText = `${currentQ + 1}. ${qData.q}`;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = "";
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-4 py-3 glass-card hover:bg-pink-500/20 rounded-xl text-sm transition";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    currentQ++;
+                    loadQuiz();
+                };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
